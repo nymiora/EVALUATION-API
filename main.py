@@ -2,7 +2,8 @@ from typing import List
 
 from fastapi import FastAPI
 from pydantic import BaseModel
-from starlette.responses import HTMLResponse
+from starlette import status
+from starlette.responses import HTMLResponse, JSONResponse
 
 app = FastAPI()
 
@@ -44,3 +45,20 @@ def add_posts(new_posts: List[Posts], posts=None):
 @app.get("/posts")
 def get_posts(posts=None):
     return posts
+
+@app.put("/posts")
+def update_or_add_post(post: Posts, posts=None):
+    for i, existing in enumerate(posts):
+        if existing["Reference"] == post.Reference:
+            posts[i] = post.dict()
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content={"message": "Post mis à jour", "post": post.dict()}
+            )
+
+
+    posts.append(post.dict())
+    return JSONResponse(
+        status_code=status.HTTP_201_CREATED,
+        content={"message": "Nouveau post ajouté", "post": post.dict()}
+    )
