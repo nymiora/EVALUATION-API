@@ -39,3 +39,8 @@ def add_posts(new_posts: List[Posts], posts=None):
         "message": f"{added} posts ajouté(s)",
         "post": posts
     }
+
+
+@app.get("/posts")
+def get_posts(posts=None):
+    return posts
